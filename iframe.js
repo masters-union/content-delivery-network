@@ -6,14 +6,20 @@ class LoadWidget {
         this.init();
     }
     init() {
-        document.addEventListener("DOMContentLoaded", () => this.loadIframe());
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            this.loadIframe();
+        } else {
+            document.addEventListener("DOMContentLoaded", () => this.loadIframe());
+        }
         const observer = new MutationObserver(() => {
             if (!this.iframeLoaded) this.loadIframe();
         });
         observer.observe(document.body, { childList: true, subtree: true });
         if (!window.loadWidgetListener) {
             window.loadWidgetListener = true;
-            window.addEventListener("message", this.handleMessage);
+            // window.addEventListener("message", this.handleMessage);
+            window.widgetMessageHandler = this.handleMessage.bind(this);
+            window.addEventListener("message", window.widgetMessageHandler);
         }
     }
     loadIframe() {
@@ -35,6 +41,16 @@ class LoadWidget {
         iframe.src = `${iFrameSrc}?${urlParams.toString()}`;
     }
     handleMessage(event) {
+        const allowedOrigins = [
+            'https://admin-lead.mastersunion.org',
+            'http://localhost:7001',
+            'http://localhost:7002',
+            'http://localhost:7003',
+        ];
+        if (!allowedOrigins.includes(event.origin)) {
+            console.warn('Message received from unauthorized origin:', event.origin);
+            return;
+        }
         if (event.data?.type === "REDIRECT" && event.data?.url) {
             window.location.href = event.data.url;
         }
