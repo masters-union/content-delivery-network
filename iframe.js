@@ -29,7 +29,9 @@ class LoadWidget {
         urlParams.append("widgetHostURL", window.location.href);
         urlParams.append("parentReferrer", document.referrer || window.location.href || "");
 
-        iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-forms allow-popups");
+        iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox");
+        iframe.setAttribute("allow", "autoplay; camera; microphone; fullscreen; display-capture");
+
         iframe.src = `${iFrameSrc}?${urlParams.toString()}`;
     }
     handleMessage(event) {
