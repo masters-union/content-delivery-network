@@ -1,1 +1,46 @@
-class LoadWidget{constructor(e){this.widgetId=e,this.iframeLoaded=!1,this.init()}init(){document.addEventListener("DOMContentLoaded",(()=>this.loadIframe()));new MutationObserver((()=>{this.iframeLoaded||this.loadIframe()})).observe(document.body,{childList:!0,subtree:!0}),window.loadWidgetListener||(window.loadWidgetListener=!0,window.addEventListener("message",this.handleMessage))}loadIframe(){const e=document.getElementById(this.widgetId);if(!e||this.iframeLoaded)return;this.iframeLoaded=!0,e.setAttribute("frameBorder","0");let t=`https://admin-lead.mastersunion.org/widget/${this.widgetId}`;const d=new URLSearchParams(window.location.search);d.append("widgetHostURL",window.location.href),d.append("parentReferrer",document.referrer||window.location.href||""),e.src=`${t}?${d.toString()}`}handleMessage(e){"REDIRECT"===e.data?.type&&e.data?.url&&(window.location.href=e.data.url)}}
+class LoadWidget {
+    constructor(widgetId) {
+        this.widgetId = widgetId;
+        this.iframeLoaded = false;
+
+        this.init();
+    }
+    init() {
+        document.addEventListener("DOMContentLoaded", () => this.loadIframe());
+        const observer = new MutationObserver(() => {
+            if (!this.iframeLoaded) this.loadIframe();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+        if (!window.loadWidgetListener) {
+            window.loadWidgetListener = true;
+            window.addEventListener("message", this.handleMessage);
+        }
+    }
+    loadIframe() {
+        const iframe = document.getElementById(this.widgetId);
+        if (!iframe || this.iframeLoaded) return;
+
+        this.iframeLoaded = true;
+        iframe.setAttribute("frameBorder", "0");
+
+        // let iFrameSrc = `http://localhost:7001/widget/${this.widgetId}`;
+        let iFrameSrc = `https://admin-lead.mastersunion.org/widget/${this.widgetId}`;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.append("widgetHostURL", window.location.href);
+        urlParams.append("parentReferrer", document.referrer || window.location.href || "");
+
+        iframe.setAttribute("sandbox", "allow-same-origin allow-scripts allow-forms allow-popups");
+        iframe.src = `${iFrameSrc}?${urlParams.toString()}`;
+    }
+    handleMessage(event) {
+        if (event.data?.type === "REDIRECT" && event.data?.url) {
+            window.location.href = event.data.url;
+        }
+        if (event.data?.type === "RESIZE" && event.data?.height) {
+            const iframe = document.getElementById(event.data.widgetId);
+            if (iframe) {
+                iframe.style.height = `${event.data.height}px`;
+            }
+        }
+    }
+};
