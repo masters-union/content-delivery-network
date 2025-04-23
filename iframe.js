@@ -6,21 +6,22 @@ class LoadWidget {
         this.init();
     }
     init() {
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            this.loadIframe();
-        } else {
-            document.addEventListener("DOMContentLoaded", () => this.loadIframe());
-        }
-        const observer = new MutationObserver(() => {
-            if (!this.iframeLoaded) this.loadIframe();
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
-        if (!window.loadWidgetListener) {
-            window.loadWidgetListener = true;
-            // window.addEventListener("message", this.handleMessage);
-            window.widgetMessageHandler = this.handleMessage.bind(this);
-            window.addEventListener("message", window.widgetMessageHandler);
-        }
+        // if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        //     this.loadIframe();
+        // } else {
+        //     document.addEventListener("DOMContentLoaded", () => this.loadIframe());
+        // }
+        // const observer = new MutationObserver(() => {
+        //     if (!this.iframeLoaded) this.loadIframe();
+        // });
+        // observer.observe(document.body, { childList: true, subtree: true });
+        // if (!window.loadWidgetListener) {
+        //     window.loadWidgetListener = true;
+        //     // window.addEventListener("message", this.handleMessage);
+        //     window.widgetMessageHandler = this.handleMessage.bind(this);
+        //     window.addEventListener("message", window.widgetMessageHandler);
+        // }
+        this.loadIframe();
     }
     loadIframe() {
         const iframe = document.getElementById(this.widgetId);
@@ -62,7 +63,6 @@ class LoadWidget {
         }
     }
 };
-
 
 
 // class LoadWidget {
